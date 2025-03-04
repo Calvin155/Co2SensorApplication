@@ -9,7 +9,7 @@ class CO2Sensor:
             time.sleep(2)
             self.request_data = bytearray([0xFF, 0x01, 0x86, 0x00, 0x00, 0x00, 0x00, 0x00, 0x79])
             print(f"CO₂ sensor initialized on {serial_port} at {baudrate} baud.")
-        except serial.SerialException as e:
+        except Exception as e:
             print(f"Error initializing serial port: {e}")
             self.ser = None
 
@@ -36,7 +36,7 @@ class CO2Sensor:
             else:
                 print("No data received from CO₂ sensor.")
 
-        except serial.SerialException as e:
+        except Exception as e:
             print(f"Serial error: {e}")
             return None
 
