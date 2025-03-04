@@ -1,37 +1,47 @@
 import serial
 import time
 
-def initialize_sensor():
-    ser = serial.Serial('/dev/serial0', baudrate=9600, timeout=5)
-    time.sleep(2) 
+class CO2Sensor:
+    def __init__(self, serial_port='/dev/serial0', baudrate=9600, timeout=5):
+        try:
+            self.ser = serial.Serial(serial_port, baudrate, timeout=timeout)
+            time.sleep(2)  # Allow sensor to initialize
+            self.request_data = bytearray([0xFF, 0x01, 0x86, 0x00, 0x00, 0x00, 0x00, 0x00, 0x79])
+            print(f"CO₂ sensor initialized on {serial_port} at {baudrate} baud.")
+        except serial.SerialException as e:
+            print(f"Error initializing serial port: {e}")
+            self.ser = None
 
-    request_data = bytearray([0xFF, 0x01, 0x86, 0x00, 0x00, 0x00, 0x00, 0x00, 0x79])
-    return ser, request_data
+    def is_connected(self):
+        return self.ser is not None and self.ser.is_open
 
-def read_co2_data(ser, request_data):
-    while True:
-        ser.write(request_data)
-        if ser.in_waiting > 0:
-            response = ser.read(9)
-            if len(response) == 9 and response[0] == 0xFF and response[1] == 0x86:
-                co2 = response[2] * 256 + response[3]
-                print(f"CO₂ Concentration: {co2} ppm")
-                time.sleep(15)
+    def read_co2(self):
+        if not self.is_connected():
+            print("CO₂ sensor is not connected.")
+            return None
+
+        try:
+            self.ser.write(self.request_data)
+            time.sleep(0.1)
+
+            if self.ser.in_waiting >= 9:
+                response = self.ser.read(9)
+                if len(response) == 9 and response[0] == 0xFF and response[1] == 0x86:
+                    co2 = response[2] * 256 + response[3]
+                    return co2
+                else:
+                    print(f"Invalid or corrupt response: {response}")
+                    return None
             else:
-                print(f"Invalid or corrupt response: {response}")
-                print(f"Re-Initialize Sensor")
-                initialize_sensor()
-                time.sleep(15)
-        else:
-            print("No data received.")
-        time.sleep(2)
+                print("No data received from CO₂ sensor.")
+                return None
 
-if __name__ == "__main__":
-    ser, request_data = initialize_sensor()
+        except serial.SerialException as e:
+            print(f"Serial error: {e}")
+            return None
 
-    try:
-        read_co2_data(ser, request_data)
-    except KeyboardInterrupt:
-        print("\nExiting...")
-    finally:
-        ser.close()
+    def close(self):
+        if self.is_connected():
+            self.ser.close()
+            print("CO₂ sensor connection closed.")
+
