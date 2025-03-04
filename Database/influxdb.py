@@ -45,34 +45,18 @@ class InfluxDB:
         except Exception as e:
             print(e)
 
-
-
-    def write_data(self, measurement, tags, fields):
-            try:
-                point = {
-                    "measurement": measurement,
-                    "tags": tags,
-                    "fields": fields
-                }
-                self.write_api.write(bucket=self.bucket, record=point)
-                print("Data Written Successfully to Database")
-            except Exception as e:
-                print("Error Writing Data to Database")
-
-    def write_pm_data(self, pm1, pm2_5, pm10):
+    def write_co2_data(self, co2_ppm, co2_percentage):
         try:
-            pm1 = float(pm1)
-            pm2_5 = float(pm2_5)
-            pm10 = float(pm10)
+            co2_ppm = float(co2_ppm)
+            co2_percentage = float(co2_percentage)
 
             timestamp = datetime.utcnow().isoformat()
             point = {
                 "measurement": "air_quality",
                 "tags": {"location": "local"},
                 "fields": {
-                    "PM1": pm1,
-                    "PM2.5": pm2_5,
-                    "PM10": pm10
+                    "Co2 - Parts Per-Million": co2_ppm,
+                    "Co2 Percentage": co2_percentage,
                 },
                 "time": timestamp
             }
@@ -80,28 +64,6 @@ class InfluxDB:
             self.write_api.write(bucket=self.bucket, record=point)
         except Exception as e:
             print("Error writing data to Database:", str(e))
-
-    def write_co2_temp_hum_data(self, co2, temp, humidity):
-        try:
-            print("Step 4 - connected to db - co2")
-            timestamp = datetime.utcnow().isoformat()
-            print("Step 5 - time stamp")
-            print(timestamp)
-            point = {
-                "measurement": "air_quality",
-                "tags": {"location": "local"},
-                "fields": {
-                    "CO2": co2,
-                    "Temperature": temp,
-                    "Humidity": humidity
-                },
-                "time": timestamp
-            }
-            print("Step 6 - Just aboput to write CO2")
-            self.write_api.write(bucket=self.bucket, record=point)
-            print(" step 7 CO2, Temp & Humidity Data Written Successfully to Database")
-        except Exception as e:
-            print("Error writing data to Database - CO2 Sensor", str(e))
 
     def close(self):
         if self.client:
