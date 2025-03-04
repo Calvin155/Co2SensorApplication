@@ -5,9 +5,10 @@ import time
 class CO2Sensor:
     def __init__(self, baudrate=9600):
         try:
-            self.serial_port = '/dev/ttyAMA0'
+            self.serial_port = '/dev/ttyAMA2'
             self.baudrate = baudrate
             self.ser = serial.Serial(self.serial_port, self.baudrate, timeout=10)
+            self.request_data = bytearray([0xFF, 0x01, 0x86, 0x00, 0x00, 0x00, 0x00, 0x00, 0x79])
             print(f"Connected to {self.serial_port} at {self.baudrate} baudrate.")
         
         except serial.SerialException as e:
