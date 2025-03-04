@@ -1,6 +1,6 @@
 import serial
 import time
-from Database.influxdb import InfluxDB
+# from Database.influxdb import InfluxDB
 
 class CO2Sensor:
     def __init__(self, serial_port='/dev/serial0', baudrate=9600, timeout=5):
