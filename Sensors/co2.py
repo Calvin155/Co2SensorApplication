@@ -29,7 +29,8 @@ class CO2Sensor:
                 influx_db = InfluxDB()
                 if len(response) == 9 and response[0] == 0xFF and response[1] == 0x86:
                     co2 = response[2] * 256 + response[3]
-                    influx_db.write_co2_data(co2, co2 / 1000)
+                    co2_perc = co2 / 1000
+                    influx_db.write_co2_data(co2, co2_perc)
                 else:
                     print(f"Invalid or corrupt response: {response}")
             else:
