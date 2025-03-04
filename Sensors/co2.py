@@ -3,15 +3,16 @@ import time
 # from Database.influxdb import InfluxDB
 
 class CO2Sensor:
-    def __init__(self, serial_port='/dev/serial0', baudrate=9600, timeout=5):
+    def __init__(self, baudrate=9600):
         try:
-            self.ser = serial.Serial(serial_port, baudrate, timeout=timeout)
-            time.sleep(2)
-            self.request_data = bytearray([0xFF, 0x01, 0x86, 0x00, 0x00, 0x00, 0x00, 0x00, 0x79])
-            print(f"CO₂ sensor initialized on {serial_port} at {baudrate} baud.")
-        except Exception as e:
-            print(f"Error initializing serial port: {e}")
-            self.ser = None
+            self.serial_port = '/dev/ttyAMA0'
+            self.baudrate = baudrate
+            self.ser = serial.Serial(self.serial_port, self.baudrate, timeout=10)
+            print(f"Connected to {self.serial_port} at {self.baudrate} baudrate.")
+        
+        except serial.SerialException as e:
+            print(e)
+
 
     def is_connected(self):
         return self.ser is not None and self.ser.is_open
