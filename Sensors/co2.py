@@ -1,6 +1,6 @@
 import serial
 import time
-# from Database.influxdb import InfluxDB
+from Database.influxdb import InfluxDB
 
 class CO2Sensor:
     def __init__(self, baudrate=9600):
@@ -28,12 +28,13 @@ class CO2Sensor:
             time.sleep(0.1)
             if self.ser.in_waiting >= 9:
                 response = self.ser.read(9)
-                # influx_db = InfluxDB()
+                influx_db = InfluxDB()
                 if len(response) == 9 and response[0] == 0xFF and response[1] == 0x86:
                     co2 = response[2] * 256 + response[3]
-                    co2_perc = co2 / 1000
+                    # get a percentage
+                    co2_perc = co2 / 10000
                     print(f"CO2 {co2} & Co2 percentage: {co2_perc}")
-                    # influx_db.write_co2_data(co2, co2_perc)
+                    influx_db.write_co2_data(co2, co2_perc)
                 else:
                     print(f"Invalid or corrupt response: {response}")
             else:
