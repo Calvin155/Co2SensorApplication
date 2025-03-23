@@ -14,10 +14,10 @@ INFLUXDB_TOKEN = os.getenv("INFLUXDB_TOKEN")
 
 These variables will require valid values or the data will now be written - Either update the variable with the database URL:PORT & Token(Not recomended to put these values directly into the source code) or save these as enviromental variables on the system or in a keystore to add an additional layer of security for these variables as they are considerd sensitive.
 
-Raspberry Pi Requirements: Raspberry Pi & PMS7003 sensor(Sensor connected to Raspberry Pi 5 on Serial1(UART Enabled)), Network access, Docker CLI
+Raspberry Pi Requirements: Raspberry Pi & MH-Z19B Co2 sensor(Sensor connected to Raspberry Pi 5 on Serial1(UART Enabled)), Network access, Docker CLI
 Packages: Installed in docker container using Poetry Pytomel file
 
-Where to Run this Application: On the Rasoberry as it interacts with the PMS7003 sensor
+Where to Run this Application: On the Rasoberry as it interacts with the MH-Z19B Co2 sensor
 
 How to Run: 
 
