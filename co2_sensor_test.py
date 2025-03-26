@@ -16,18 +16,18 @@ class TestCO2Sensor(unittest.TestCase):
         self.assertTrue(sensor.is_connected())
         mock_serial.assert_called_once_with('/dev/ttyAMA0', 9600, timeout=10)
 
-    # @patch("serial.Serial")
-    # def test_is_connected(self, mock_serial):
-    #     """Test if the sensor correctly detects connection status."""
-    #     mock_serial_instance = MagicMock()
-    #     mock_serial.return_value = mock_serial_instance
+    @patch("serial.Serial")
+    def test_is_connected(self, mock_serial):
+        """Test if the sensor correctly detects connection status."""
+        mock_serial_instance = MagicMock()
+        mock_serial.return_value = mock_serial_instance
 
-    #     mock_serial_instance.is_open = True
-    #     sensor = CO2Sensor()
-    #     self.assertTrue(sensor.is_connected())
+        mock_serial_instance.is_open = True
+        sensor = CO2Sensor()
+        self.assertTrue(sensor.is_connected())
 
-    #     mock_serial_instance.is_open = False
-    #     self.assertFalse(sensor.is_connected())
+        mock_serial_instance.is_open = False
+        self.assertFalse(sensor.is_connected())
 
     # @patch("serial.Serial")
     # @patch("Database.influxdb.InfluxDB")
