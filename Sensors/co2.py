@@ -49,3 +49,7 @@ class CO2Sensor:
             self.ser.close()
             print("CO₂ sensor connection closed.")
 
+
+
+
+
