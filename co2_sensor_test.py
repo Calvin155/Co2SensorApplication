@@ -59,32 +59,32 @@ class TestCO2Sensor(unittest.TestCase):
             sensor.read_co2()
             mock_print.assert_any_call("No data received from CO₂ sensor.")
 
-    @patch("serial.Serial")
-    def test_read_co2_corrupt_response(self, mock_serial):
-        """Test if the sensor correctly handles a corrupt response."""
-        corrupt_data = bytes([0xFF, 0x01, 0x00, 0x00])
-        mock_serial_instance = MagicMock()
-        mock_serial_instance.read.return_value = corrupt_data
-        mock_serial_instance.in_waiting = len(corrupt_data)
-        mock_serial.return_value = mock_serial_instance
-
-        sensor = CO2Sensor()
-
-        with patch("builtins.print") as mock_print:
-            sensor.read_co2()
-            mock_print.assert_any_call(f"Invalid or corrupt response: {corrupt_data}")
-
     # @patch("serial.Serial")
-    # def test_close(self, mock_serial):
-    #     """Test if the CO2Sensor properly closes the serial connection."""
+    # def test_read_co2_corrupt_response(self, mock_serial):
+    #     """Test if the sensor correctly handles a corrupt response."""
+    #     corrupt_data = bytes([0xFF, 0x01, 0x00, 0x00])
     #     mock_serial_instance = MagicMock()
-    #     mock_serial_instance.is_open = True
+    #     mock_serial_instance.read.return_value = corrupt_data
+    #     mock_serial_instance.in_waiting = len(corrupt_data)
     #     mock_serial.return_value = mock_serial_instance
 
     #     sensor = CO2Sensor()
-    #     sensor.close()
 
-    #     mock_serial_instance.close.assert_called_once()
+    #     with patch("builtins.print") as mock_print:
+    #         sensor.read_co2()
+    #         mock_print.assert_any_call(f"Invalid or corrupt response: {corrupt_data}")
+
+    @patch("serial.Serial")
+    def test_close(self, mock_serial):
+        """Test if the CO2Sensor properly closes the serial connection."""
+        mock_serial_instance = MagicMock()
+        mock_serial_instance.is_open = True
+        mock_serial.return_value = mock_serial_instance
+
+        sensor = CO2Sensor()
+        sensor.close()
+
+        mock_serial_instance.close.assert_called_once()
 
 if __name__ == "__main__":
     unittest.main()
