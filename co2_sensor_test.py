@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 import serial
 from Sensors.co2 import CO2Sensor
+import datetime
 
 class TestCO2Sensor(unittest.TestCase):
 
@@ -40,14 +41,27 @@ class TestCO2Sensor(unittest.TestCase):
         mock_serial.return_value = mock_serial_instance
         mock_influxdb_instance = MagicMock()
         mock_influxdb.return_value = mock_influxdb_instance
-
+        mock_write_api = MagicMock()
+        mock_influxdb_instance.write_api = mock_write_api
         sensor = CO2Sensor()
+
+        timestamp = datetime.utcnow().isoformat()
 
         with patch("builtins.print") as mock_print:
             sensor.read_co2()
-            mock_print.assert_any_call("CO2 1000 & Co2 percentage: 0.1")
 
-        mock_influxdb_instance.write_co2_data.assert_called_once_with(1000, 0.1)
+            mock_print.assert_any_call("CO2 1000 & Co2 percentage: 0.1")
+        mock_write_api.write.assert_called_once_with(
+            bucket="AQIMetrics", record={
+                "measurement": "air_quality",
+                "tags": {"location": "local"},
+                "fields": {
+                    "Co2 - Parts Per-Million": 1000.0,
+                    "Co2 Percentage": 0.1
+                },
+                "time": timestamp
+            }
+        )
 
 
     @patch("serial.Serial")
