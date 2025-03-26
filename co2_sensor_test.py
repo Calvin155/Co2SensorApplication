@@ -29,26 +29,26 @@ class TestCO2Sensor(unittest.TestCase):
         mock_serial_instance.is_open = False
         self.assertFalse(sensor.is_connected())
 
-
     @patch("serial.Serial")
     @patch("Database.influxdb.InfluxDB")
     def test_read_co2_valid_response(self, mock_influxdb, mock_serial):
         """Test if valid CO2 sensor data is read and stored correctly."""
-        valid_data = bytes([0xFF, 0x86, 0x03, 0xE8, 0x00, 0x00, 0x00, 0x00, 0x79])  # Valid response
+        valid_data = bytes([0xFF, 0x86, 0x03, 0xE8, 0x00, 0x00, 0x00, 0x00, 0x79])
         mock_serial_instance = MagicMock()
         mock_serial_instance.read.return_value = valid_data
         mock_serial_instance.in_waiting = len(valid_data)
         mock_serial.return_value = mock_serial_instance
+        mock_influxdb_instance = MagicMock()
+        mock_influxdb.return_value = mock_influxdb_instance
 
         sensor = CO2Sensor()
 
         with patch("builtins.print") as mock_print:
             sensor.read_co2()
-            # Check that print was called with the expected CO2 data
             mock_print.assert_any_call("CO2 1000 & Co2 percentage: 0.1")
-        
-        # Check if InfluxDB's write_co2_data was called with the correct parameters
-        mock_influxdb.return_value.write_co2_data.assert_called_once_with(1000, 0.1)
+
+        mock_influxdb_instance.write_co2_data.assert_called_once_with(1000, 0.1)
+
 
     @patch("serial.Serial")
     def test_read_co2_no_data(self, mock_serial):
