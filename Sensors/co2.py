@@ -13,6 +13,7 @@ class CO2Sensor:
         
         except serial.SerialException as e:
             print(e)
+            raise e 
 
 
     def is_connected(self):
