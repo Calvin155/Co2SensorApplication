@@ -1,6 +1,7 @@
 import serial
 import time
 from Database.influxdb import InfluxDB
+import logging
 
 class CO2Sensor:
     def __init__(self, baudrate=9600):
@@ -9,10 +10,10 @@ class CO2Sensor:
             self.baudrate = baudrate
             self.ser = serial.Serial(self.serial_port, self.baudrate, timeout=10)
             self.request_data = bytearray([0xFF, 0x01, 0x86, 0x00, 0x00, 0x00, 0x00, 0x00, 0x79])
-            print(f"Connected to {self.serial_port} at {self.baudrate} baudrate.")
+            logging.info(f"Connected to {self.serial_port} at {self.baudrate} baudrate.")
         
         except serial.SerialException as e:
-            print(e)
+            logging.exception(e)
             raise e 
 
 
@@ -21,7 +22,7 @@ class CO2Sensor:
 
     def read_co2(self):
         if not self.is_connected():
-            print("CO₂ sensor is not connected - Check Connection.")
+            logging.info("CO₂ sensor is not connected - Check Connection.")
             return None
 
         try:
@@ -34,21 +35,21 @@ class CO2Sensor:
                     co2 = response[2] * 256 + response[3]
                     # get a percentage
                     co2_perc = co2 / 10000
-                    print(f"CO2 {co2} & Co2 percentage: {co2_perc}")
+                    logging.info(f"CO2 {co2} & Co2 percentage: {co2_perc}")
                     influx_db.write_co2_data(co2, co2_perc)
                 else:
-                    print(f"Invalid or corrupt response: {response}")
+                    logging.error(f"Invalid or corrupt response: {response}")
             else:
-                print("No data received from CO₂ sensor.")
+                logging.error("No data received from CO₂ sensor.")
 
         except Exception as e:
-            print(f"Serial error: {e}")
+            logging.exception(f"Serial error: {e}")
             return None
 
     def close(self):
         if self.is_connected():
             self.ser.close()
-            print("CO₂ sensor connection closed.")
+            logging.info("CO₂ sensor connection closed.")
 
 
 

@@ -11,8 +11,11 @@ Database Requirements: Ensure that you have a database set up & running live. Th
 This will require some configuration: Locate the Database folder & then locate influxdb.py.
 Locate the following: 
 
+
 INFLUXDB_URL = os.getenv("INFLUXDB_URL")
 INFLUXDB_TOKEN = os.getenv("INFLUXDB_TOKEN")
+
+(if cannot pass url and token in via .env variables on the Raspberry Pi, just pass directly)
 
 These variables will require valid values or the data will now be written - Either update the variable with the database URL:PORT & Token(Not recomended to put these values directly into the source code) or save these as enviromental variables on the system or in a keystore to add an additional layer of security for these variables as they are considerd sensitive.
 

@@ -25,25 +25,23 @@ class InfluxDB:
         try:
             if self.client:
                 self.client = InfluxDBClient(url=self.url, token=self.token, org=self.org)
-                print("Successfully Connected to Influx Database")
-                print("Successfully connected to Influx")
+                logging.info("Successfully Connected to Influx Database")
             else:
-                print("Already connected to Influx Database")
-                print("Already connected to Influx")
+                logging.info("Already connected to Influx")
 
         except Exception as e:
-            print("Error Connecting to Database: ", str(e))
+            logging.exception("Error Connecting to Database: ", str(e))
 
     def connected(self):
         try:
             if self.client.ping() == 200:
-                print("Connected & Pinging")
+                logging.info("Connected & Pinging")
                 return True
             else:
-                print("No Joy")
+                logging.info("No Joy")
                 return False
         except Exception as e:
-            print(e)
+            logging.exception(e)
 
     def write_co2_data(self, co2_ppm, co2_percentage):
         try:
@@ -62,10 +60,11 @@ class InfluxDB:
             }
 
             self.write_api.write(bucket=self.bucket, record=point)
+            logging.info("CO2 data written to database")
         except Exception as e:
-            print("Error writing data to Database:", str(e))
+            logging.exception("Error writing data to Database:", str(e))
 
     def close(self):
         if self.client:
             self.client.close()
-            print("Connection to Database Closed")
+            logging.info("Connection to Database Closed")
